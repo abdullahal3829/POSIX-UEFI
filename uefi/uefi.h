@@ -1308,6 +1308,21 @@ extern int errno;
 #define	EDOM		33	/* Math argument out of domain of func */
 #define	ERANGE		34	/* Math result not representable */
 
+/* ctype.h */
+extern int isdigit (int __c);
+extern int isalpha (int __c);
+extern int isalnum (int __c);
+extern int isxdigit (int __c);
+extern int isspace (int __c);
+extern int isupper (int __c);
+extern int islower (int __c);
+extern int isprint (int __c);
+extern int iscntrl (int __c);
+extern int ispunct (int __c);
+extern int isgraph (int __c);
+extern int tolower (int __c);
+extern int toupper (int __c);
+
 /* stdlib.h */
 #define RAND_MAX       2147483647
 typedef int (*__compar_fn_t) (const void *, const void *);
@@ -1389,6 +1404,9 @@ extern char_t *strstr (const char_t *__haystack, const char_t *__needle);
 extern char_t *strtok (char_t *__s, const char_t *__delim);
 extern char_t *strtok_r (char_t *__s, const char_t *__delim, char_t **__save_ptr);
 extern size_t strlen (const char_t *__s);
+extern size_t strnlen (const char_t *__s, size_t __maxlen);
+extern size_t strspn (const char_t *__s, const char_t *__accept);
+extern size_t strcspn (const char_t *__s, const char_t *__reject);
 
 /* sys/stat.h */
 #define S_IREAD    0400 /* Read by owner.  */
