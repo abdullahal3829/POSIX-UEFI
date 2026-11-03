@@ -87,13 +87,13 @@ uefi/libuefi.a:
 
 libuefi.lib: $(LIBOBJS)
 
-libuefi.a: $(LIBOBJS)
-	@rm $@ 2>/dev/null || true
-	$(AR) -rsv $@ $(LIBOBJS) >/dev/null
+libuefi.a: $(addprefix $(OUTDIR),$(LIBOBJS))
+	@rm $(addprefix $(OUTDIR),$@) 2>/dev/null || true
+	$(AR) -rsv $(addprefix $(OUTDIR),$@) $^ >/dev/null
 
 $(TARGET): $(addprefix $(OUTDIR),$(TARGET).so)
 ifneq ($(USE_GCC),)
-	$(OBJCOPY) -j .text -j .sdata -j .data -j .dynamic -j .dynsym  -j .rel -j .rela -j .rel.* -j .rela.* -j .reloc --target $(EFIARCH) --subsystem=10 $^ $(addprefix $(OUTDIR),$@) || echo target: $(EFIARCH)
+	$(GENFW) -e UEFI_APPLICATION -o $(addprefix $(OUTDIR),$@) $^
 	@rm $(addprefix $(OUTDIR),$(TARGET).so)
 endif
 
@@ -104,21 +104,21 @@ $(addprefix $(OUTDIR),$(TARGET).so): $(addprefix $(OUTDIR),$(OBJS)) $(EXTRA)
 uefi/%.o: uefi/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $(addprefix $(OUTDIR),$@)
+$(addprefix $(OUTDIR),%.o): %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.S
-	$(CC) $(CFLAGS) -c $< -o $(addprefix $(OUTDIR),$@)
+$(addprefix $(OUTDIR),%.o): %.S
+	$(CC) $(CFLAGS) -c $< -o $@
 
 buildlib:
 	@mkdir ../build ../build/uefi 2>/dev/null || true
-	@cp crt_$(ARCH).o ../build/uefi/crt0.o
+	@cp $(addprefix $(OUTDIR),crt_$(ARCH).o) ../build/uefi/crt0.o
 	@cp elf_$(ARCH)_efi.lds ../build/uefi/link.ld
 ifneq ($(USE_GCC),)
-	@cp libuefi.a uefi.h ../build/uefi
+	@cp $(addprefix $(OUTDIR),libuefi.a) uefi.h ../build/uefi
 else
 	@cp uefi.h ../build/uefi
-	@cp libuefi.a ../build/uefi/libuefi.dll.a
+	@cp $(addprefix $(OUTDIR),libuefi.a) ../build/uefi/libuefi.dll.a
 endif
 
 clean:
